@@ -1,0 +1,60 @@
+name: Build Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, test, dev ]
+
+env:
+  DEV_IMAGE_TAG: latest
+  TEST_IMAGE_TAG: rc
+  MAIN_IMAGE_TAG: stable
+
+jobs:
+  build:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Checkout deployment action
+        uses: actions/checkout@v4
+        with:
+          repository: gen2b/deployment
+          ref: main
+          token: ${{ secrets.GHCR_TOKEN }}
+          path: _deployment
+
+      - name: Get image repository path
+        id: image-repo
+        run: echo "IMAGE_REPO=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Get current timestamp
+        id: date
+        run: echo "TIMESTAMP_TAG=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+
+      - name: Set branch-based environment variables
+        uses: iamtheyammer/branch-env-vars@v1.2.2
+        with:
+          IMAGE_TAG: |
+            main:${{ env.MAIN_IMAGE_TAG }}
+            test:${{ env.TEST_IMAGE_TAG }}
+            dev:${{ env.DEV_IMAGE_TAG }}
+
+      - name: Build image
+        uses: "./_deployment/.github/actions/build"
+        with:
+          image: ${{ env.IMAGE_REPO }}
+          image-tag: ${{ env.IMAGE_TAG }}
+          commit-tag: ${{ github.sha }}
+          image-timestamp-tag: ${{ env.TIMESTAMP_TAG }}-${{ env.IMAGE_TAG }}
+          context: .
+          dockerfile: .deployment/Dockerfile
+          registry-password: ${{ secrets.GHCR_TOKEN }}
+          build-args: |
+            APP_RELEASE=${{ env.TIMESTAMP_TAG }}-${{ env.IMAGE_TAG }}

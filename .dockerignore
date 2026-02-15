@@ -1,0 +1,16 @@
+# Custom added files
+.idea/
+.vscode/
+.DS_Store
+.github/
+.deployment/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.cursorrules
+.env
+.env.example
+venv/
+dev/
+tests/
