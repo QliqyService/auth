@@ -28,6 +28,7 @@ class PatchedUvicornWorker(UvicornWorker):
     CONFIG_KWARGS = {
         "proxy_headers": True,
         "forwarded_allow_ips": "*",
+        "access_log": False,
     }
     # _root_path = os.getenv("APP_PUBLIC_PATH")
     # if "x" + _root_path != "x":
