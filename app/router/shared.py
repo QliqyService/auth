@@ -1,6 +1,6 @@
 from fastapi import Request
 
-from app.router import Router
+from app.router.base import Router
 from app.schemas.shared import GetHealthcheckResponse
 
 
