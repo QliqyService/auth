@@ -2,7 +2,7 @@
 name = "qliqy-auth"
 version = "0.1.0"
 description = "Qliqy | Auth Services"
-authors = [{ name = "Ernestor1337", email = "berezin.505@gmail.com" },{ name = "ilia2003", email= "fedorenkoilia@gmail.com"},{ name = "Jeishod", email = "jeishod@gmail.com" }]
+authors = [{ name = "Ernestor1337", email = "berezin.505@gmail.com" },{ name = "ilia2003", email= "fedorenkoilia@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
