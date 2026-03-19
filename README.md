@@ -1,6 +1,6 @@
 # Qliqy Auth Service
 
-![CI](https://github.com/ilia2003/Qliqy/actions/workflows/auth-build.yaml/badge.svg)
+![CI](https://github.com/QliqyService/auth/actions/workflows/auth-build.yaml/badge.svg)
 ![Status](https://img.shields.io/badge/status-active%20development-b4492f)
 
 Authentication and identity service for Qliqy.
