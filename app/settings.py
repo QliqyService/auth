@@ -1,6 +1,7 @@
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path, PosixPath
+from urllib.parse import urlparse
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -98,7 +99,17 @@ class _Settings(BaseSettings):
     RABBITMQ_PASSWORD: str
 
     MAILER_ROUTING_KEY: str = "mailer_requests"
-    REDIRECT_URI: str = "https://qliqy.io/"
+    REDIRECT_URI: str = "https://qliqy.org/"
+
+    @property
+    def FRONTEND_BASE_URL(self) -> str:
+        value = (self.REDIRECT_URI or "").strip()
+        parsed = urlparse(value)
+
+        if parsed.scheme and parsed.netloc:
+          return value.rstrip("/")
+
+        return "https://qliqy.org"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

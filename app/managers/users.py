@@ -22,7 +22,7 @@ RESET_PASSWORD_TEMPLATE_PATH: Final[str] = "email/reset_password.html"
 
 
 def build_frontend_url(path: str, **query_params: str) -> str:
-    base_url = settings.REDIRECT_URI.rstrip("/")
+    base_url = settings.FRONTEND_BASE_URL
     query = urlencode({key: value for key, value in query_params.items() if value})
     return f"{base_url}{path}" + (f"?{query}" if query else "")
 
