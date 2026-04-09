@@ -1,5 +1,6 @@
 import uuid
 from typing import TYPE_CHECKING, Any, Final, Optional
+from urllib.parse import urlencode
 
 from fastapi_users import BaseUserManager, UUIDIDMixin, models
 from fastapi_users.jwt import generate_jwt
@@ -18,6 +19,12 @@ settings = get_settings()
 
 VERIFY_TEMPLATE_PATH: Final[str] = "email/verify.html"
 RESET_PASSWORD_TEMPLATE_PATH: Final[str] = "email/reset_password.html"
+
+
+def build_frontend_url(path: str, **query_params: str) -> str:
+    base_url = settings.REDIRECT_URI.rstrip("/")
+    query = urlencode({key: value for key, value in query_params.items() if value})
+    return f"{base_url}{path}" + (f"?{query}" if query else "")
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
@@ -49,7 +56,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         )
 
         # 2. Render verification email template
-        redirect_url = settings.REDIRECT_URI + f"auth/confirm-email?code={token}&email={user.email}"
+        redirect_url = build_frontend_url(
+            "/verify-email",
+            token=token,
+            email=user.email,
+        )
         html_message = await Services.template_factory.render(
             template_path=VERIFY_TEMPLATE_PATH,
             context=dict(
@@ -69,7 +80,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         LOGGER.warning(f"User {user.id} has forgot their password. Reset token: {token}")
 
         # 1. Render reset password email template
-        redirect_url = settings.REDIRECT_URI + f"auth/reset-password?code={token}&email={user.email}"
+        redirect_url = build_frontend_url(
+            "/reset-password",
+            token=token,
+            email=user.email,
+        )
         html_message = await Services.template_factory.render(
             template_path=RESET_PASSWORD_TEMPLATE_PATH,
             context=dict(
@@ -89,7 +104,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         LOGGER.warning(f"Verification requested for user {user.id}. Verification token: {token}")
 
         # 1. Render verification email template
-        redirect_url = settings.REDIRECT_URI + f"auth/confirm-email?code={token}&email={user.email}"
+        redirect_url = build_frontend_url(
+            "/verify-email",
+            token=token,
+            email=user.email,
+        )
         html_message = await Services.template_factory.render(
             template_path=VERIFY_TEMPLATE_PATH,
             context=dict(
@@ -129,7 +148,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         )
 
         # 2. Render verification email template
-        redirect_url = settings.REDIRECT_URI + f"auth/confirm-email?code={token}&email={user.email}"
+        redirect_url = build_frontend_url(
+            "/verify-email",
+            token=token,
+            email=user.email,
+        )
         html_message = await Services.template_factory.render(
             template_path=VERIFY_TEMPLATE_PATH,
             context=dict(
